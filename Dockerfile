@@ -1,17 +1,14 @@
-FROM httpd:2.2
+# A basic apache server. To use either add or bind mount content under /var/www
+FROM ubuntu:12.04
 
-RUN mkdir -p /usr/local/apache2/run /usr/local/apache2/logs/website
+MAINTAINER Kimbro Staken version: 0.1
 
-COPY preview_config/conf /usr/local/apache2/conf
-COPY preview_config/conf.d /usr/local/apache2/conf.d
-COPY preview_config/mime.types /etc/mime.types
+RUN apt-get update && apt-get install -y apache2 && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-COPY saks-website.tar.gz /home/docroot/website/saks-website.tar.gz
-
-WORKDIR /home/docroot/website
-
-RUN tar xfz saks-website.tar.gz ./static
-RUN rm /home/docroot/website/saks-website.tar.gz
+ENV APACHE_RUN_USER www-data
+ENV APACHE_RUN_GROUP www-data
+ENV APACHE_LOG_DIR /var/log/apache2
 
 EXPOSE 80
-CMD ["httpd-foreground"]
+
+CMD ["/usr/sbin/apache2", "-D", "FOREGROUND"]
