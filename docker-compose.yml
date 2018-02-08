@@ -3,9 +3,18 @@ go-server:
   ports:
     - '8153:8153'
     - '8154:8154'
+  volumes:
+    - /tmp/go:/home/go
 
 go-agent:
   image: gocd/gocd-agent-ubuntu-14.04:v18.1.0
+  links:
+    - go-server
+  environment:
+    GO_SERVER_URL: https://go-server:8154/go
+
+gocd-agent-node:
+  image: gocd-agent-node:latest
   links:
     - go-server
   environment:
